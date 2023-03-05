@@ -1,0 +1,12 @@
+/.well-known
+/cgi-bin
+scratch
+testing
+*.swp
+*.back
+backup/
+*.swp
+cover_db/
+.gitconfig
+remoteperljobs.sqlite3
+tmp/
