@@ -8,7 +8,9 @@ use DBI;
 our $VERSION = '0.001';
 
 sub connect_db {
-    my $dsn = load();
+    my $class = shift;
+
+    my $dsn = $class->load();
     my $dbh = DBI->connect(
         $dsn, undef, undef,
         {   PrintError       => 0,
@@ -22,6 +24,8 @@ sub connect_db {
 }
 
 sub load {
+    my $class = shift;
+
     my $module_path = Cwd::realpath(__FILE__);
     $module_path =~ s/\w+\.pm//;
     my $db = Cwd::realpath( $module_path . '/../../../db/remoteperljobs.sqlite3' );
@@ -44,7 +48,7 @@ App::RemotePerlJobs::DB - creates and connects to the database handle
 =head1 SYNOPSIS
 
  use App::RemotePerlJobs::DB ();
- my $dbh = App::RemotePerlJobs::DB::connect_db();
+ my $dbh = App::RemotePerlJobs::DB->connect_db();
 
 =head1 DESCRIPTION
 

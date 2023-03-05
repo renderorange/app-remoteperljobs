@@ -2,16 +2,39 @@ package App::RemotePerlJobs::Feed;
 
 use strictures version => 2;
 
+use App::RemotePerlJobs::DB ();
 use URI;
 use XML::Feed;
 
 our $VERSION = '0.001';
 
+sub get_all {
+    my $class = shift;
+
+    my $dbh = App::RemotePerlJobs::DB->connect_db();
+    my $select_sources_sql = 'select name, url from sources';
+    my $sources = $dbh->selectall_arrayref( $select_sources_sql, { Slice => {} } );
+
+    my $feeds = [];
+    foreach my $source ( @$sources ) {
+        push @$feeds, $class->get( $source );
+    }
+
+    return $feeds;
+}
+
 sub get {
-    my $rss = URI->new( 'https://jobs.perl.org/rss/telecommute.rss' );
+    my $class  = shift;
+    my $source = shift;
+
+    if ( !$source ) {
+        die "source is required";
+    }
+
+    my $rss = URI->new( $source->{'url'} );
 
     my $feed = XML::Feed->parse( $rss )
-        or die "get telecommute.rss failed: " . XML::Feed->errstr;
+        or die "get '$source->{'name'}' feed failed: " . XML::Feed->errstr;
 
     return $feed;
 }
@@ -27,7 +50,8 @@ App::RemotePerlJobs::Feed - methods for interacting with the perljobs feed
 =head1 SYNOPSIS
 
  use App::RemotePerlJobs::Feed ();
- my $feed = App::RemotePerlJobs::Feed::get();
+ my $feeds = App::RemotePerlJobs::Feed->get_all();
+ my $feed  = App::RemotePerlJobs::Feed->get( $url );
 
 =head1 DESCRIPTION
 
@@ -35,9 +59,9 @@ This module provides methods for other modules to interact with the perljobs fee
 
 =head1 SUBROUTINES/METHODS
 
-=head2 get
+=head2 get_all
 
-Constructor for the object.
+=head2 get
 
 =head1 AUTHOR
 

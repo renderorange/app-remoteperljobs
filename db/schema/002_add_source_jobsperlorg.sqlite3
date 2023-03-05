@@ -1,0 +1,4 @@
+insert into sources
+    ( name, description, url )
+values
+    ( 'jobs.perl.org telecommute', 'the telecommute feed from jobs.perl.org', 'https://jobs.perl.org/rss/telecommute.rss' );

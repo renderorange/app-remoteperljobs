@@ -3,7 +3,6 @@ package App::RemotePerlJobs;
 use strictures version => 2;
 
 use App::RemotePerlJobs::Feed ();
-use App::RemotePerlJobs::DB   ();
 
 our $VERSION = '0.001';
 
@@ -17,16 +16,14 @@ sub new {
 sub run {
     my $self = shift;
 
-    my $feed = App::RemotePerlJobs::Feed::get();
-    my $dbh  = App::RemotePerlJobs::DB::connect_db();
-
-    foreach my $item ( $feed->items ) {
-        my $title     = $item->title;
-        my $link      = $item->link;
-        $link         =~ /.+\/(\d+)$/;
-        my $job_id    = $1;
-        my $posted_on_epoch = $item->issued->epoch;
-        my $posted_on_ymd   = $item->issued->ymd;
+    my $feeds = App::RemotePerlJobs::Feed->get_all();
+    foreach my $feed ( @$feeds ) {
+        foreach my $item ( $feed->items ) {
+            my $title           = $item->title;
+            my $link            = $item->link;
+            my $posted_on_epoch = $item->issued->epoch;
+            my $posted_on_ymd   = $item->issued->ymd;
+        }
     }
 }
 
