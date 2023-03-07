@@ -5,6 +5,7 @@ use strictures version => 2;
 use App::RemotePerlJobs::Feed ();
 use App::RemotePerlJobs::DB   ();
 use Try::Tiny                 ();
+use App::Toot                 ();
 
 our $VERSION = '0.001';
 
@@ -15,7 +16,7 @@ sub new {
     return bless $self, $class;
 }
 
-sub run {
+sub fetch {
     my $self = shift;
 
     my $dbh = App::RemotePerlJobs::DB->connect_db();
@@ -55,6 +56,58 @@ sub run {
             }
         }
     }
+
+    return;
+}
+
+sub post {
+    my $self = shift;
+
+    my $dbh = App::RemotePerlJobs::DB->connect_db();
+
+    my $select_posts_sql = 'select id, title, link, posted_on from jobs where reposted = 0';
+    my $jobs = $dbh->selectall_arrayref( $select_posts_sql, { Slice => {} } );
+
+    require Time::Piece;
+
+    foreach my $job ( @$jobs ) {
+        my $title = $job->{'title'};
+        my $link  = $job->{'link'};
+        my $posted_on = $job->{'posted_on'};
+
+        my $time_piece = Time::Piece->strptime( $posted_on, '%s' );
+        my $posted_ymd = $time_piece->ymd;
+
+        my $status = "$title\n" .
+                     "Posted on $posted_ymd\n" .
+                     "$link\n";
+
+        my $app = App::Toot->new({ config => 'development', status => $status });
+        my $ret = $app->run();
+        if ( !$ret->id ) {
+            die 'post failed';
+        }
+
+        my $update_post_sql = 'update jobs set reposted = 1 where id = ?';
+        $dbh->do( $update_post_sql, undef, $job->{'id'} );
+        Try::Tiny::try {
+            $dbh->do( $update_post_sql, undef, $job->{'id'} );
+        }
+        Try::Tiny::catch {
+            die "update failed: $_";
+        };
+    }
+
+    return;
+}
+
+sub run {
+    my $self = shift;
+
+    $self->fetch();
+    $self->post();
+
+    return;
 }
 
 1;
