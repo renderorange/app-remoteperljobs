@@ -1,4 +1,4 @@
-insert into sources
-    ( name, description, url )
+insert into feeds
+    ( title, description, link, rss )
 values
-    ( 'jobs.perl.org telecommute', 'the telecommute feed from jobs.perl.org', 'https://jobs.perl.org/rss/telecommute.rss' );
+    ( 'Perl Jobs', 'The Perl Job Site', 'https://jobs.perl.org/', 'https://jobs.perl.org/rss/telecommute.rss' );

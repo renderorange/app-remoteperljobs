@@ -12,7 +12,7 @@ sub get_all {
     my $class = shift;
 
     my $dbh = App::RemotePerlJobs::DB->connect_db();
-    my $select_sources_sql = 'select name, url from sources';
+    my $select_sources_sql = 'select title, rss from feeds';
     my $sources = $dbh->selectall_arrayref( $select_sources_sql, { Slice => {} } );
 
     my $feeds = [];
@@ -28,13 +28,13 @@ sub get {
     my $source = shift;
 
     if ( !$source ) {
-        die "source is required";
+        die 'source is required';
     }
 
-    my $rss = URI->new( $source->{'url'} );
+    my $rss = URI->new( $source->{'rss'} );
 
     my $feed = XML::Feed->parse( $rss )
-        or die "get '$source->{'name'}' feed failed: " . XML::Feed->errstr;
+        or die "get '$source->{'title'}' feed failed: " . XML::Feed->errstr;
 
     return $feed;
 }
