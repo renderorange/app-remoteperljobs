@@ -82,7 +82,7 @@ sub post {
                      "Posted on $posted_ymd\n" .
                      "$link\n";
 
-        my $app = App::Toot->new({ config => 'development', status => $status });
+        my $app = App::Toot->new({ config => 'remoteperljobs', status => $status });
         my $ret = $app->run();
         if ( !$ret->id ) {
             die 'post failed';
