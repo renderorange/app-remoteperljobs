@@ -116,7 +116,7 @@ sub run {
 
 =head1 NAME
 
-App::RemotePerlJobs - get feed and post to mastodon
+App::RemotePerlJobs - get job feeds and post to mastodon
 
 =head1 SYNOPSIS
 
@@ -125,13 +125,29 @@ App::RemotePerlJobs - get feed and post to mastodon
 
 =head1 DESCRIPTION
 
-C<App::RemotePerlJob> is an application to get the telecommute feed from jobs.perl.org and post it to mastodon.
+C<App::RemotePerlJobs> is an application to fetch remote perl job feeds and post them to mastodon.
 
 =head1 SUBROUTINES/METHODS
 
 =head2 new
 
 Constructor for the object.
+
+=head2 fetch
+
+Fetch the jobs from the configured feeds.
+
+=head2 post
+
+Post the jobs to the configured mastodon account.
+
+=head2 run
+
+Run both fetch and post methods.
+
+=head1 COPYRIGHT AND LICENSE
+
+C<App::RemotePerlJobs> is Copyright (c) 2022 Blaine Motsinger under the MIT license.
 
 =head1 AUTHOR
 
