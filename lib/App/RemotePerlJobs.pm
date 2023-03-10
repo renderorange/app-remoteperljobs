@@ -37,7 +37,7 @@ sub fetch {
             next;
         }
 
-        foreach my $item ( $feed->items ) {
+        foreach my $item ( reverse $feed->items ) {
             my $title           = $item->title;
             my $link            = $item->link;
             my $posted_on_epoch = $item->issued->epoch;
