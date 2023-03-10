@@ -1,0 +1,8 @@
+#!/usr/bin/env perl
+
+use strictures version => 2;
+
+use App::RemotePerlJobs;
+
+my $app = App::RemotePerlJobs->new();
+$app->run();
