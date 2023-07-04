@@ -90,7 +90,6 @@ sub post {
         }
 
         my $update_post_sql = 'update jobs set reposted = 1 where id = ?';
-        $dbh->do( $update_post_sql, undef, $job->{'id'} );
         Try::Tiny::try {
             $dbh->do( $update_post_sql, undef, $job->{'id'} );
         }
