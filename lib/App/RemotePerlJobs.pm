@@ -83,8 +83,8 @@ sub post {
                      "$link\n" .
                      "#Perl\n";
 
-        my $app = App::Toot->new({ config => 'remoteperljobs', status => $status });
-        my $ret = $app->run();
+        my $app_toot = App::Toot->new({ config => 'remoteperljobs', status => $status });
+        my $ret = $app_toot->run();
         if ( !$ret->id ) {
             die 'post failed';
         }
