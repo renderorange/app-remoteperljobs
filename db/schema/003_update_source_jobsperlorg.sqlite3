@@ -1,0 +1,3 @@
+update feeds
+set title = 'jobs.perl.org'
+where title = 'Perl Jobs';
