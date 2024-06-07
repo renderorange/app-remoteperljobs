@@ -13,7 +13,7 @@ To install on a Debian/Ubuntu system:
 ## install perl dependencies
 
     $ apt install git cpanminus sqlite3
-    $ cpanm App:Toot indirect multidimensional bareword::filehandles strictures XML::Feed DBD::SQLite
+    $ cpanm App::Toot indirect multidimensional bareword::filehandles strictures XML::Feed DBD::SQLite
 
 ## download repo
 
