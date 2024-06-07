@@ -31,6 +31,7 @@ To install on a Debian/Ubuntu system:
     $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/001_schema.sqlite3
     $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/002_add_source_jobsperlorg.sqlite3
     $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/003_update_source_jobsperlorg.sqlite3
+    $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/004_update_source_jobsperlorg.sqlite3
 
 ## add mastodon credentials
 

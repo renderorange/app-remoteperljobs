@@ -1,0 +1,3 @@
+update feeds
+set rss = 'https://jobs.perl.org/rss/standard.rss'
+where title = 'Perl Jobs';
