@@ -10,10 +10,9 @@ App::RemotePerlJobs - get job feeds and post to mastodon
 
 To install on a Debian/Ubuntu system:
 
-## install perl dependencies
+## install system dependencies
 
-    $ apt install git cpanminus sqlite3
-    $ cpanm App::Toot indirect multidimensional bareword::filehandles strictures XML::Feed DBD::SQLite
+    $ apt install git cpanminus sqlite3 make
 
 ## download repo
 
@@ -22,16 +21,10 @@ To install on a Debian/Ubuntu system:
     $ cd git
     $ git clone https://github.com/renderorange/app-remoteperljobs.git
 
-## create sqlite3 db
+## run install make target
 
     $ cd app-remoteperljobs
-    $ sqlite3 db/remoteperljobs.sqlite3
-    sqlite> .databases
-    sqlite> .q
-    $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/001_schema.sqlite3
-    $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/002_add_source_jobsperlorg.sqlite3
-    $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/003_update_source_jobsperlorg.sqlite3
-    $ sqlite3 db/remoteperljobs.sqlite3 < db/schema/004_update_source_jobsperlorg.sqlite3
+    $ make install
 
 ## add mastodon credentials
 
