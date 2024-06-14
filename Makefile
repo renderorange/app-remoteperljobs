@@ -15,3 +15,11 @@ install:
 	@echo
 	@echo "installation is complete"
 	@echo "create the cronjob and add the mastodon credentials to automate posting"
+
+.PHONY: upgrade
+upgrade:
+	@echo -n "Are you sure? [y/N] " && read ans && if [ $${ans:-'N'} != 'y' ]; then echo "exiting"; fi
+	@echo "updating repo"
+	@git fetch && git pull
+	@echo "applying database patches"
+	@bash bin/apply_database_patches.bash
