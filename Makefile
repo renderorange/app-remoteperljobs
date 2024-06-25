@@ -1,4 +1,5 @@
 SHELL := bash
+PERL_DEPS := $(shell cat cpanfile|cut -d"'" -f2)
 
 .PHONY: install
 install:
@@ -8,7 +9,7 @@ install:
 	@bash bin/check_deps.bash
 	@echo
 	@echo "installing perl dependencies"
-	@cpanm -n App::Toot indirect multidimensional bareword::filehandles strictures XML::Feed DBD::SQLite
+	@cpanm -nq $(PERL_DEPS)
 	@echo
 	@echo "creating sqlite3 database"
 	@bash bin/create_database.sh
@@ -21,5 +22,7 @@ upgrade:
 	@echo -n "Are you sure? [y/N] " && read ans && if [ $${ans:-'N'} != 'y' ]; then echo "exiting"; fi
 	@echo "updating repo"
 	@git fetch && git pull
+	@echo "installing perl dependencies"
+	@cpanm -nq $(PERL_DEPS)
 	@echo "applying database patches"
 	@bash bin/apply_database_patches.bash
