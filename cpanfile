@@ -5,3 +5,4 @@ requires 'bareword::filehandles';
 requires 'strictures';
 requires 'XML::Feed';
 requires 'DBD::SQLite';
+requires 'LWP::Protocol::https';
