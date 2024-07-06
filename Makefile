@@ -20,9 +20,12 @@ install:
 .PHONY: upgrade
 upgrade:
 	@echo -n "Are you sure? [y/N] " && read ans && if [ $${ans:-'N'} != 'y' ]; then echo "exiting"; fi
+	@echo
 	@echo "updating repo"
 	@git fetch && git pull
+	@echo
 	@echo "installing perl dependencies"
 	@cpanm -nq $(PERL_DEPS)
+	@echo
 	@echo "applying database patches"
 	@bash bin/apply_database_patches.bash
