@@ -12,15 +12,15 @@ sub get_all {
     my $class = shift;
 
     my $dbh = App::RemotePerlJobs::DB->connect_db();
-    my $select_sources_sql = 'select title, rss from feeds';
+    my $select_sources_sql = 'select id, title, rss from feeds';
     my $sources = $dbh->selectall_arrayref( $select_sources_sql, { Slice => {} } );
 
     my $feeds = [];
     foreach my $source ( @$sources ) {
-        push @$feeds, $class->get( $source );
+        $source->{feed} = $class->get( $source );
     }
 
-    return $feeds;
+    return $sources;
 }
 
 sub get {

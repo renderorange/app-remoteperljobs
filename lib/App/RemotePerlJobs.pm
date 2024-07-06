@@ -23,21 +23,11 @@ sub fetch {
 
     my $feeds = App::RemotePerlJobs::Feed->get_all();
     foreach my $feed ( @$feeds ) {
-        my $feed_title = $feed->title;
-        my $feed_link  = $feed->link;
+        my $feed_title = $feed->{feed}->title;
+        my $feed_link  = $feed->{feed}->link;
+        my $feed_id    = $feed->{id};
 
-        # reselecting the feed id here isn't entirely efficient
-        # refactor this and the return from Feed->get_all to append this information somewhere
-        # it can be read from.
-        my $select_feed_sql = 'select id from feeds where title = ? and link = ?';
-        my ( $feed_id ) = $dbh->selectrow_array( $select_feed_sql, undef, $feed_title, $feed_link );
-
-        if ( !$feed_id ) {
-            warn "feed not found ($feed_title - $feed_link)\n";
-            next;
-        }
-
-        foreach my $item ( reverse $feed->items ) {
+        foreach my $item ( reverse $feed->{feed}->items ) {
             my $title           = $item->title;
             my $link            = $item->link;
             my $posted_on_epoch = $item->issued->epoch;
