@@ -6,7 +6,7 @@ use App::RemotePerlJobs::DB ();
 use URI;
 use XML::Feed;
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 sub get_all {
     my $class = shift;
