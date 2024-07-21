@@ -4,6 +4,7 @@ scratch
 testing
 *.swp
 *.back
+*.bak
 backup/
 *.swp
 cover_db/
