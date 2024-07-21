@@ -31,16 +31,16 @@ To install on a Debian/Ubuntu system:
     git - found
     cpanm - found
     sqlite3 - found
-    
+
     installing perl dependencies
     App::Toot is up to date. (0.04)
     indirect is up to date. (0.39)
     multidimensional is up to date. (0.014)
     bareword::filehandles is up to date. (0.007)
     strictures is up to date. (2.000006)
-    XML::Feed is up to date. (0.63)
+    XML::Feed is up to date. (0.65)
     DBD::SQLite is up to date. (1.74)
-    
+
     creating sqlite3 database
     applying 001_schema.sqlite3
     applying 002_add_source_jobsperlorg.sqlite3
@@ -75,10 +75,28 @@ To upgrade the local install and apply database patches which haven't been appli
     $ cd git/app-remoteperljobs
     $ make upgrade
     Are you sure? [y/N] y
+
+    checking system dependencies
+    git - found
+    cpanm - found
+    sqlite3 - found
+
     updating repo
     Already up to date.
+
+    installing perl dependencies
+    App::Toot is up to date. (0.04)
+    indirect is up to date. (0.39)
+    multidimensional is up to date. (0.014)
+    bareword::filehandles is up to date. (0.007)
+    strictures is up to date. (2.000006)
+    XML::Feed is up to date. (0.65)
+    DBD::SQLite is up to date. (1.74)
+    Successfully installed LWP-Protocol-https-6.14
+    1 distribution installed
+
     applying database patches
-    applying patch 005_add_db_patch_history.sqlite3
+    006_update_source_jobsperlorg.sqlite3
 
 # COPYRIGHT AND LICENSE
 

@@ -21,6 +21,9 @@ install:
 upgrade:
 	@echo -n "Are you sure? [y/N] " && read ans && if [ $${ans:-'N'} != 'y' ]; then echo "exiting"; fi
 	@echo
+	@echo "checking system dependencies"
+	@bash bin/check_deps.bash
+	@echo
 	@echo "updating repo"
 	@git fetch && git pull
 	@echo
