@@ -16,7 +16,7 @@ sub get_all {
     my $sources            = $dbh->selectall_arrayref( $select_sources_sql, { Slice => {} } );
 
     my $feeds = [];
-    foreach my $source (@$sources) {
+    foreach my $source ( @{$sources} ) {
         $source->{feed} = $class->get($source);
     }
 

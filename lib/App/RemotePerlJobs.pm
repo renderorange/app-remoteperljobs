@@ -22,7 +22,7 @@ sub fetch {
     my $dbh = App::RemotePerlJobs::DB->connect_db();
 
     my $feeds = App::RemotePerlJobs::Feed->get_all();
-    foreach my $feed (@$feeds) {
+    foreach my $feed ( @{$feeds} ) {
         my $feed_title = $feed->{feed}->title;
         my $feed_link  = $feed->{feed}->link;
         my $feed_id    = $feed->{id};
@@ -60,7 +60,7 @@ sub post {
 
     require Time::Piece;
 
-    foreach my $job (@$jobs) {
+    foreach my $job ( @{$jobs} ) {
         my $title     = $job->{'title'};
         my $link      = $job->{'link'};
         my $posted_on = $job->{'posted_on'};
