@@ -1,5 +1,5 @@
 package App::RemotePerlJobs;
-  
+
 use strictures version => 2;
 
 use App::RemotePerlJobs::Feed ();
@@ -22,7 +22,7 @@ sub fetch {
     my $dbh = App::RemotePerlJobs::DB->connect_db();
 
     my $feeds = App::RemotePerlJobs::Feed->get_all();
-    foreach my $feed ( @$feeds ) {
+    foreach my $feed (@$feeds) {
         my $feed_title = $feed->{feed}->title;
         my $feed_link  = $feed->{feed}->link;
         my $feed_id    = $feed->{id};
@@ -33,7 +33,7 @@ sub fetch {
             my $posted_on_epoch = $item->issued->epoch;
 
             my $select_job_sql = 'select count(*) from jobs where link = ? and posted_on = ?';
-            my ( $count ) = $dbh->selectrow_array( $select_job_sql, undef, $link, $posted_on_epoch );
+            my ($count) = $dbh->selectrow_array( $select_job_sql, undef, $link, $posted_on_epoch );
 
             if ( !$count ) {
                 my $insert_job_sql = 'insert into jobs ( title, link, posted_on, feeds_id ) values ( ?, ?, ?, ? )';
@@ -56,25 +56,22 @@ sub post {
     my $dbh = App::RemotePerlJobs::DB->connect_db();
 
     my $select_posts_sql = 'select id, title, link, posted_on from jobs where reposted = 0';
-    my $jobs = $dbh->selectall_arrayref( $select_posts_sql, { Slice => {} } );
+    my $jobs             = $dbh->selectall_arrayref( $select_posts_sql, { Slice => {} } );
 
     require Time::Piece;
 
-    foreach my $job ( @$jobs ) {
-        my $title = $job->{'title'};
-        my $link  = $job->{'link'};
+    foreach my $job (@$jobs) {
+        my $title     = $job->{'title'};
+        my $link      = $job->{'link'};
         my $posted_on = $job->{'posted_on'};
 
         my $time_piece = Time::Piece->strptime( $posted_on, '%s' );
         my $posted_ymd = $time_piece->ymd;
 
-        my $status = "$title\n" .
-                     "Posted on $posted_ymd\n" .
-                     "$link\n" .
-                     "#Perl\n";
+        my $status = "$title\n" . "Posted on $posted_ymd\n" . "$link\n" . "#Perl\n";
 
-        my $app_toot = App::Toot->new({ config => 'remoteperljobs', status => $status });
-        my $ret = $app_toot->run();
+        my $app_toot = App::Toot->new( { config => 'remoteperljobs', status => $status } );
+        my $ret      = $app_toot->run();
         if ( !$ret->id ) {
             die 'post failed';
         }

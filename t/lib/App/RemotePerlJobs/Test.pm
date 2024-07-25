@@ -96,9 +96,8 @@ sub init_db {
         or die "opendir $schema_dir: $!\n";
 
     my @schema_files =
-        map { "$schema_dir/$_" }
-        grep { !/^\./ && -f "$schema_dir/$_" }
-        readdir $schema_dh;
+        map {"$schema_dir/$_"}
+        grep { !/^\./ && -f "$schema_dir/$_" } readdir $schema_dh;
 
     closedir $schema_dh;
 

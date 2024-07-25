@@ -11,13 +11,13 @@ our $VERSION = '0.002';
 sub get_all {
     my $class = shift;
 
-    my $dbh = App::RemotePerlJobs::DB->connect_db();
+    my $dbh                = App::RemotePerlJobs::DB->connect_db();
     my $select_sources_sql = 'select id, title, rss from feeds';
-    my $sources = $dbh->selectall_arrayref( $select_sources_sql, { Slice => {} } );
+    my $sources            = $dbh->selectall_arrayref( $select_sources_sql, { Slice => {} } );
 
     my $feeds = [];
-    foreach my $source ( @$sources ) {
-        $source->{feed} = $class->get( $source );
+    foreach my $source (@$sources) {
+        $source->{feed} = $class->get($source);
     }
 
     return $sources;
@@ -33,7 +33,7 @@ sub get {
 
     my $rss = URI->new( $source->{'rss'} );
 
-    my $feed = XML::Feed->parse( $rss )
+    my $feed = XML::Feed->parse($rss)
         or die "get '$source->{'title'}' feed failed: " . XML::Feed->errstr;
 
     return $feed;
