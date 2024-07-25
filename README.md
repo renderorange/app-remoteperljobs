@@ -34,12 +34,25 @@ To install on a Debian/Ubuntu system:
 
     installing perl dependencies
     App::Toot is up to date. (0.04)
-    indirect is up to date. (0.39)
-    multidimensional is up to date. (0.014)
     bareword::filehandles is up to date. (0.007)
-    strictures is up to date. (2.000006)
-    XML::Feed is up to date. (0.65)
+    Cwd is up to date. (3.89)
     DBD::SQLite is up to date. (1.74)
+    DBI is up to date. (1.643)
+    indirect is up to date. (0.39)
+    LWP::Protocol::https is up to date. (6.14)
+    multidimensional is up to date. (0.014)
+    strictures is up to date. (2.000006)
+    Time::Piece is up to date. (1.3401_01)
+    Try::Tiny is up to date. (0.31)
+    URI is up to date. (5.28)
+    XML::Feed is up to date. (0.65)
+    FindBin is up to date. (1.54)
+    File::Path is up to date. (2.18)
+    File::Temp is up to date. (0.2311)
+    Test::Deep is up to date. (1.204)
+    Test::Exception is up to date. (0.43)
+    Test::More is up to date. (1.302199)
+    Test::Warnings is up to date. (0.033)
 
     creating sqlite3 database
     applying 001_schema.sqlite3
@@ -86,13 +99,25 @@ To upgrade the local install and apply database patches which haven't been appli
 
     installing perl dependencies
     App::Toot is up to date. (0.04)
-    indirect is up to date. (0.39)
-    multidimensional is up to date. (0.014)
     bareword::filehandles is up to date. (0.007)
-    strictures is up to date. (2.000006)
-    XML::Feed is up to date. (0.65)
+    Cwd is up to date. (3.89)
     DBD::SQLite is up to date. (1.74)
+    DBI is up to date. (1.643)
+    indirect is up to date. (0.39)
     Successfully installed LWP-Protocol-https-6.14
+    multidimensional is up to date. (0.014)
+    strictures is up to date. (2.000006)
+    Time::Piece is up to date. (1.3401_01)
+    Try::Tiny is up to date. (0.31)
+    URI is up to date. (5.28)
+    XML::Feed is up to date. (0.65)
+    FindBin is up to date. (1.54)
+    File::Path is up to date. (2.18)
+    File::Temp is up to date. (0.2311)
+    Test::Deep is up to date. (1.204)
+    Test::Exception is up to date. (0.43)
+    Test::More is up to date. (1.302199)
+    Test::Warnings is up to date. (0.033)
     1 distribution installed
 
     applying database patches
