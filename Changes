@@ -1,0 +1,24 @@
+Revision history for App::RemotePerlJobs
+
+0.002 2024-07-21
+ - Update jobs.perl.org feed title
+ - Update documentation for schema update
+ - Fix App::Toot cpanm lib install command
+ - Update jobs.perl.org feed url to standard.rss
+ - Add Makefile with install target
+ - Add stub script to apply database patches
+ - Update README with install commands
+ - Add db patch file to create db_patch_history table
+ - Add logging on install into db_patch_history table
+ - Add functionality to apply patches in apply_database_patches.bash
+ - Update README with upgrade instructions
+ - Add cpanfile to manage perl deps for install and upgrade
+ - Fix jobs.perl.org standard feed
+ - Add echos to make upgrade target
+ - Add perl dep for https
+ - Refactor get_all error return
+ - Add system deps check for upgrade make step
+ - Add script to increment version numbers
+
+0.001 2023-07-04
+ - Initial version
