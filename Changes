@@ -1,5 +1,17 @@
 Revision history for App::RemotePerlJobs
 
+0.003 2024-08-10
+ - Update feed back to telecommute
+ - Add .bak to gitignore
+ - Add test module for the project
+ - Update deps and add test deps to cpanfile
+ - Add author and lint tests
+ - Fix perltidy test failures
+ - Fix perlcritic test failures
+ - Updated install and upgrade examples
+ - Add Changes file
+ - Add version release test
+
 0.002 2024-07-21
  - Update jobs.perl.org feed title
  - Update documentation for schema update
