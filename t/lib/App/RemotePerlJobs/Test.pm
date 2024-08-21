@@ -15,6 +15,8 @@ our $VERSION = '0.003';
 
 our ( $tempdir, $dbh );
 
+my $cleanup = 1;
+
 my $module_path = Cwd::realpath(__FILE__);
 $module_path =~ s/\/\w+\.pm//;
 
@@ -29,6 +31,10 @@ sub import {
     }
     elsif ( $args{skip_all} ) {
         $class->builder->plan( skip_all => $args{skip_all} );
+    }
+
+    if ($args{skip_cleanup}) {
+        $cleanup = 0;
     }
 
     $tempdir = File::Temp->newdir(
@@ -135,7 +141,7 @@ sub init_db {
 }
 
 END {
-    if ($tempdir) {
+    if ( $cleanup && $tempdir ) {
         if ( File::Path::rmtree($tempdir) ) {
             Test::More::note("cleaned up tempdir - $tempdir");
         }
@@ -146,3 +152,65 @@ END {
 }
 
 1;
+
+__END__
+
+=pod
+
+=head1 NAME
+
+App::RemotePerlJobs::Test - test setup helper for C<App::RemotePerlJobs>.
+
+=head1 DESCRIPTION
+
+C<App::RemotePerlJobs::Test> is a module to make test setup easy for the C<App::RemotePerlJobs> project.
+
+=head1 SYNOPSIS
+
+ use FindBin;
+ use lib "$FindBin::RealBin/../lib", "$FindBin::RealBin/../../lib";
+ use App::RemotePerlJobs::Test;
+
+=head1 ARGUMENTS
+
+C<App::RemotePerlJobs::Test> accepts arguments to control initialization.
+
+The following arguments are available:
+
+=over
+
+=item tests
+
+The C<tests> argument is passed into C<Test::Builder> and defines the number of tests the test contains.
+
+ use App::RemotePerlJobs::Test tests => 3;
+
+=item skip_all
+
+The C<skip_all> argument is passed into C<Test::Builder> and tells the test harness to skip the tests defined in the test.
+
+ use App::RemotePerlJobs::Test skip_all => 1;
+
+=item skip_cleanup
+
+The C<skip_cleanup> argument instructs C<App::RemotePerlJobs::Test> to not cleanup the temp directory after the test is done.
+
+ use App::RemotePerlJobs::Test skip_cleanup => 1;
+
+=item skip_db
+
+The C<skip_db> argument instructs C<App::RemotePerlJobs::Test> to not initialize the test database during the test setup.
+
+ use App::RemotePerlJobs::Test skip_db => 1;
+
+=back
+
+=head1 COPYRIGHT AND LICENSE
+
+C<App::RemotePerlJobs> is Copyright (c) 2022 Blaine Motsinger under the MIT license.
+
+=head1 AUTHOR
+
+Blaine Motsinger C<blaine@renderorange.com>
+
+=cut
