@@ -11,3 +11,4 @@ cover_db/
 .gitconfig
 remoteperljobs.sqlite3
 tmp/
+test.sqlite3
