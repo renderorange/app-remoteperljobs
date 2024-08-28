@@ -1,0 +1,4 @@
+INSERT INTO feeds
+    ( title, description, link, rss )
+VALUES
+    ( 'jobs.perl.org', 'The Perl Job Site', 'https://jobs.perl.org/', 'https://jobs.perl.org/rss/telecommute.rss' );

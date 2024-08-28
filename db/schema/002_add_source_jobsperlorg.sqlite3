@@ -1,4 +1,0 @@
-insert into feeds
-    ( title, description, link, rss )
-values
-    ( 'Perl Jobs', 'The Perl Job Site', 'https://jobs.perl.org/', 'https://jobs.perl.org/rss/telecommute.rss' );

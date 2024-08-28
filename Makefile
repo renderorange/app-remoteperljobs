@@ -11,7 +11,10 @@ install:
 	@cpanm -nq $(shell cat cpanfile|cut -d"'" -f2)
 	@echo
 	@echo "creating sqlite3 database"
-	@bash bin/create_database.sh
+	@bash bin/create_database.bash
+	@echo
+	@echo "applying database patches"
+	@bash bin/apply_database_patches.bash
 	@echo
 	@echo "installation is complete"
 	@echo "create the cronjob and add the mastodon credentials to automate posting"
