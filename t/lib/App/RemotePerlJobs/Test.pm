@@ -8,6 +8,7 @@ use File::Temp;
 use File::Path ();
 use Try::Tiny  ();
 use Cwd        ();
+use Carp       ();
 
 use parent 'Test::More';
 
@@ -81,7 +82,7 @@ sub override {
 sub init_db {
     my $db_path = $tempdir . '/test.sqlite3';
     open( my $db_fh, '>', $db_path )
-        or die "open $db_path: $!\n";
+        or Carp::confess "open $db_path: $!";
     close($db_fh);
 
     Test::More::note("created test db - $db_path");
@@ -99,7 +100,7 @@ sub init_db {
 
     my $schema_dir = "$module_path/../../../../db/schema";
     opendir( my $schema_dh, $schema_dir )
-        or die "opendir $schema_dir: $!\n";
+        or Carp::confess "opendir $schema_dir: $!";
 
     my @schema_files =
         map {"$schema_dir/$_"}
@@ -107,10 +108,18 @@ sub init_db {
 
     closedir $schema_dh;
 
+    load_sql_files(\@schema_files);
+
+    return;
+}
+
+sub load_sql_files {
+    my $files = shift;
+
     my @queries;
-    foreach my $file ( sort @schema_files ) {
+    foreach my $file ( sort @{$files} ) {
         open( my $schema_fh, '<', $file )
-            or die "open $file: $!\n";
+            or Carp::confess "open $file: $!";
 
         # each file might contain multiple queries, but should always end each
         # query with a semicolon.
@@ -132,12 +141,98 @@ sub init_db {
             return $dbh->do($query);
         }
         Try::Tiny::catch {
-            die "insert query failed: $_\n";
+            Carp::confess "insert query failed: $_";
         };
+    }
+}
 
+sub _verify_date {
+    my $date = shift;
+
+    if ( $date =~ /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}/ ) {
+        return 1;
+    }
+    else {
+        return ( undef, "date ($date) must match YYYY-MM-DDThh:mm:ss+00:00" );
+    }
+}
+
+sub create_feed {
+    my $arg  = {
+        feed    => undef,
+        entries => undef,
+        @_,
+    };
+
+    require XML::RSS;
+    require XML::Feed;
+
+    foreach my $required ( qw{feed entries} ) {
+        if ( !defined $arg->{$required} ) {
+            Carp::confess "arg $required is required";
+        }
     }
 
-    return;
+    if ( ref $arg->{feed} ne 'HASH' ) {
+        Carp::confess 'arg feed must be a hashref';
+    }
+
+    foreach my $required ( qw{title link description language author copyright date} ) {
+        if ( !$arg->{feed}{$required} ) {
+           Carp::confess "arg feed $required key is required";
+        }
+    }
+
+    my ( $ret, $err ) = _verify_date( $arg->{feed}{date} );
+    if ( !$ret ) {
+        Carp::confess $err;
+    }
+
+    if ( ref $arg->{entries} ne 'ARRAY' ) {
+        Carp::confess 'arg entries must be an arrayref';
+    }
+
+    foreach my $entry ( @{$arg->{entries}} ) {
+        foreach my $required ( qw{link title summary content author date} ) {
+            if ( !$entry->{$required} ) {
+                Carp::confess "arg entries $required key is required";
+            }
+        }
+
+        my ( $ret, $err ) = _verify_date( $entry->{date} );
+        if ( !$ret ) {
+            Carp::confess $err;
+        }
+    }
+
+    my $rss = XML::RSS->new( version => '1.0' );
+    $rss->channel(
+        title       => $arg->{feed}{title},
+        link        => $arg->{feed}{link},
+        description => $arg->{feed}{description},
+        dc => {
+            date      => $arg->{feed}{date},
+            subject   => $arg->{feed}{description},
+            creator   => $arg->{feed}{author},
+            publisher => $arg->{feed}{author},
+            rights    => $arg->{feed}{copyright},
+            language  => $arg->{feed}{language},
+        },
+    );
+
+    foreach my $entry ( @{$arg->{entries}} ) {
+        $rss->add_item(
+            title       => $entry->{title},
+            link        => $entry->{link},
+            description => $entry->{summary},
+            dc => {
+                creator => $entry->{author},
+                date    => $entry->{date},
+            },
+        );
+    }
+
+    return XML::Feed->parse(\$rss->as_string);
 }
 
 END {
@@ -202,6 +297,132 @@ The C<skip_cleanup> argument instructs C<App::RemotePerlJobs::Test> to not clean
 The C<skip_db> argument instructs C<App::RemotePerlJobs::Test> to not initialize the test database during the test setup.
 
  use App::RemotePerlJobs::Test skip_db => 1;
+
+=back
+
+=head1 SUBROUTINES
+
+The following subroutines are helpers to use within the tests.
+
+=head2 override
+
+This subroutine can be used to override (mock) methods or subroutines within the test.
+
+ App::RemotePerlJobs::Test::override(
+     package => 'App::RemotePerlJobs::Feed',
+     name    => 'get',
+     subref  => sub {
+         my $class  = shift;
+         my $source = shift;
+         return App::RemotePerlJobs::Test::create_feed(
+             feed => {
+                 title => 'test.test.local',
+                 link => 'https://test.test.local/',
+                 description => 'The Test Job Site',
+                 language => 'en-us',
+                 author => 'test@testerton.com',
+                 copyright => 'Copyright 2024 Test Testerton',
+                 date => '2024-09-01T12:10:10+00:00',
+             },
+             entries => [
+                 {
+                     link => 'https://test.test.local/',
+                     title => 'Test Entry',
+                     summary => 'Test Summary',
+                     content => 'More olives on the pizza!',
+                     author => 'test@testerton.com (Test Testerton)',
+                     date => '2024-09-01T12:10:20+00:00',
+                 },
+             ],
+         );
+     },
+ );
+
+=head2 load_sql_files
+
+This subroutine can be used to load sql files, for example containing test data, within the tests.
+
+ App::RemotePerlJobs::Test::load_sql_files( [ "$FindBin::RealBin/../db/data/add_source_testlocal.sql" ] )
+
+=head2 create_feed
+
+This subroutine creates feeds for tests.
+
+ App::RemotePerlJobs::Test::create_feed(
+     feed => {
+         title => 'test.test.local',
+         link => 'https://test.test.local/',
+         description => 'The Test Job Site',
+         language => 'en-us',
+         author => 'test@testerton.com',
+         copyright => 'Copyright 2024 Test Testerton',
+         date => '2024-09-01T12:10:10+00:00',
+     },
+     entries => [
+         {
+             link => 'https://test.test.local/',
+             title => 'Test Entry',
+             summary => 'Test Summary',
+             content => 'More olives on the pizza!',
+             author => 'test@testerton.com (Test Testerton)',
+             date => '2024-09-01T12:10:20+00:00',
+         },
+     ],
+ );
+
+=head3 ARGUMENTS
+
+=over
+
+=item feed
+
+The C<feed> argument is required and must be a hashref with the following keys:
+
+=over
+
+=item title
+
+=item link
+
+=item description
+
+=item language
+
+=item author
+
+=item copyright
+
+=item date
+
+The C<date> value must match the following format:
+
+ YYYY-MM-DDThh:mm:ss+00:00
+
+=back
+
+=item entries
+
+The C<entries> argument is required and must be an arrayref of hashrefs with the following keys:
+
+=over
+
+=item link
+
+=item title
+
+=item summary
+
+=item content
+
+=item author
+
+=item date
+
+The C<date> value must match the following format:
+
+ YYYY-MM-DDThh:mm:ss+00:00
+
+=back
 
 =back
 
