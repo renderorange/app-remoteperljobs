@@ -7,7 +7,7 @@ use App::RemotePerlJobs::DB   ();
 use Try::Tiny                 ();
 use App::Toot                 ();
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 sub new {
     my $class = shift;

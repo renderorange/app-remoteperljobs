@@ -1,5 +1,11 @@
 Revision history for App::RemotePerlJobs
 
+0.004 2024-08-31
+ - Move perl deps and repo update in make target
+ - Add skip_cleanup argument to Test.pm
+ - Add test.sqlite3 to gitignore
+ - Migrate schema and data into new layout
+
 0.003 2024-08-10
  - Update feed back to telecommute
  - Add .bak to gitignore

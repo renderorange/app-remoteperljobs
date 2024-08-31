@@ -11,7 +11,7 @@ use Cwd        ();
 
 use parent 'Test::More';
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 our ( $tempdir, $dbh );
 
