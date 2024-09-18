@@ -3,7 +3,7 @@ use warnings;
 
 use FindBin;
 use lib "$FindBin::RealBin/../lib", "$FindBin::RealBin/../../lib";
-use App::RemotePerlJobs::Test;
+use App::RemotePerlJobs::Test skip_cleanup => 1;
 
 App::RemotePerlJobs::Test::load_sql_files( [ "$FindBin::RealBin/../db/data/add_source_testlocal.sql" ] );
 
@@ -22,7 +22,7 @@ App::RemotePerlJobs::Test::override(
                 language => 'en-us',
                 author => 'test@testerton.com',
                 copyright => 'Copyright 2024 Test Testerton',
-                date => '2024-09-01T12:10:10+00:00',
+                date => '2024-09-01T12:00:00+00:00',
             },
             entries => [
                 {
@@ -31,7 +31,15 @@ App::RemotePerlJobs::Test::override(
                     summary => 'Test Summary One',
                     content => 'More olives on the pizza! One',
                     author => 'test@testerton.com (Test Testerton)',
-                    date => '2024-09-01T12:10:20+00:00',
+                    date => '2024-09-01T12:01:00+00:00',
+                },
+                {
+                    link => 'https://test.test.local/two',
+                    title => 'Test Entry Two',
+                    summary => 'Test Summary Two',
+                    content => 'More olives on the pizza! Two',
+                    author => 'test@testerton.com (Test Testerton)',
+                    date => '2024-09-02T12:01:00+00:00',
                 },
             ],
         );
@@ -46,9 +54,17 @@ $app->fetch();
 my $jobs_expected = [
     {
         id => 1,
+        title => 'Test Entry Two',
+        link => 'https://test.test.local/two',
+        posted_on => 1725278460,
+        feeds_id => 1,
+        reposted => 0,
+    },
+    {
+        id => 2,
         title => 'Test Entry One',
         link => 'https://test.test.local/one',
-        posted_on => 1725192620,
+        posted_on => 1725192060,
         feeds_id => 1,
         reposted => 0,
     },
