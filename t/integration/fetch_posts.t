@@ -3,9 +3,12 @@ use warnings;
 
 use FindBin;
 use lib "$FindBin::RealBin/../lib", "$FindBin::RealBin/../../lib";
-use App::RemotePerlJobs::Test skip_cleanup => 1;
+use App::RemotePerlJobs::Test;
 
-App::RemotePerlJobs::Test::load_sql_files( [ "$FindBin::RealBin/../db/data/add_source_testlocal.sql" ] );
+App::RemotePerlJobs::Test::load_sql_files([
+    "$FindBin::RealBin/../db/data/add_source_testlocal.sql",
+    "$FindBin::RealBin/../db/data/add_source_anotherlocal.sql",
+]);
 
 App::RemotePerlJobs::Test::override(
     package => 'App::RemotePerlJobs::Feed',
@@ -14,35 +17,68 @@ App::RemotePerlJobs::Test::override(
         my $class = shift;
         my $source = shift;
 
-        return App::RemotePerlJobs::Test::create_feed(
-            feed => {
-                title => 'test.test.local',
-                link => 'https://test.test.local/',
-                description => 'The Test Job Site',
-                language => 'en-us',
-                author => 'test@testerton.com',
-                copyright => 'Copyright 2024 Test Testerton',
-                date => '2024-09-01T12:00:00+00:00',
+        my $feeds = {
+            'https://test.test.local/rss/test.rss' => {
+                feed => {
+                    title => 'test.test.local',
+                    link => 'https://test.test.local/',
+                    description => 'The Test Job Feed',
+                    language => 'en-us',
+                    author => 'test@testerton.com',
+                    copyright => 'Copyright 2024 Test Testerton',
+                    date => '2024-09-01T12:00:00+00:00',
+                },
+                entries => [
+                    {
+                        link => 'https://test.test.local/one',
+                        title => 'Test Entry One',
+                        summary => 'Test Summary One',
+                        content => 'More olives on the pizza! One',
+                        author => 'test@testerton.com (Test Testerton)',
+                        date => '2024-09-01T12:01:00+00:00',
+                    },
+                    {
+                        link => 'https://test.test.local/two',
+                        title => 'Test Entry Two',
+                        summary => 'Test Summary Two',
+                        content => 'More olives on the pizza! Two',
+                        author => 'test@testerton.com (Test Testerton)',
+                        date => '2024-09-02T12:01:00+00:00',
+                    },
+                ],
             },
-            entries => [
-                {
-                    link => 'https://test.test.local/one',
-                    title => 'Test Entry One',
-                    summary => 'Test Summary One',
-                    content => 'More olives on the pizza! One',
-                    author => 'test@testerton.com (Test Testerton)',
-                    date => '2024-09-01T12:01:00+00:00',
+            'https://another.test.local/rss/test.rss' => {
+                feed => {
+                    title => 'another.test.local',
+                    link => 'https://another.test.local/',
+                    description => 'Another Test Job Feed',
+                    language => 'en-us',
+                    author => 'test@testerton.com',
+                    copyright => 'Copyright 2024 Test Testerton',
+                    date => '2024-09-23T12:00:00+00:00',
                 },
-                {
-                    link => 'https://test.test.local/two',
-                    title => 'Test Entry Two',
-                    summary => 'Test Summary Two',
-                    content => 'More olives on the pizza! Two',
-                    author => 'test@testerton.com (Test Testerton)',
-                    date => '2024-09-02T12:01:00+00:00',
-                },
-            ],
-        );
+                entries => [
+                    {
+                        link => 'https://another.test.local/one',
+                        title => 'Another Entry One',
+                        summary => 'Another Summary One',
+                        content => 'Even more olives on the pizza! One',
+                        author => 'test@testerton.com (Test Testerton)',
+                        date => '2024-09-23T12:01:00+00:00',
+                    },
+                    {
+                        link => 'https://another.test.local/two',
+                        title => 'Another Entry Two',
+                        summary => 'Another Summary Two',
+                        content => 'Even more olives on the pizza! Two',
+                        author => 'test@testerton.com (Test Testerton)',
+                        date => '2024-09-24T12:01:00+00:00',
+                    },
+                ],
+            },
+        };
+
+        return App::RemotePerlJobs::Test::create_feed($feeds->{$source->{rss}});
     },
 );
 
@@ -68,6 +104,22 @@ my $jobs_expected = [
         feeds_id => 1,
         reposted => 0,
     },
+    {
+        id => 3,
+        title => 'Another Entry Two',
+        link => 'https://another.test.local/two',
+        posted_on => 1727179260,
+        feeds_id => 2,
+        reposted => 0,
+    },
+    {
+        id => 4,
+        title => 'Another Entry One',
+        link => 'https://another.test.local/one',
+        posted_on => 1727092860,
+        feeds_id => 2,
+        reposted => 0,
+    },
 ];
 
 my $jobs = $App::RemotePerlJobs::Test::dbh->selectall_arrayref( 'select * from jobs', { Slice => {} } );
@@ -75,11 +127,3 @@ my $jobs = $App::RemotePerlJobs::Test::dbh->selectall_arrayref( 'select * from j
 cmp_deeply( $jobs, $jobs_expected, 'fetched jobs entries match expected' );
 
 done_testing();
-
-__END__
-
-TODO:
-this is mocking too much.  if we want to mock at Feed::get, it should have logic to get a specific response based on the inserted source from the database.
-update this to add two feeds and return different entries for each feed.
-this is doing an okay job of making sure we're parsing and storing the data from the feed, though, but could be better.
-also, expand this to parse and store multiple entries within a single feed.

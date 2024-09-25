@@ -34,7 +34,7 @@ sub import {
         $class->builder->plan( skip_all => $args{skip_all} );
     }
 
-    if ($args{skip_cleanup}) {
+    if ( $args{skip_cleanup} ) {
         $cleanup = 0;
     }
 
@@ -103,12 +103,13 @@ sub init_db {
         or Carp::confess "opendir $schema_dir: $!";
 
     my @schema_files =
-        map {"$schema_dir/$_"}
+        map  {"$schema_dir/$_"}
+        sort { $a cmp $b }
         grep { !/^\./ && -f "$schema_dir/$_" } readdir $schema_dh;
 
     closedir $schema_dh;
 
-    load_sql_files(\@schema_files);
+    load_sql_files( \@schema_files );
 
     return;
 }
@@ -117,7 +118,7 @@ sub load_sql_files {
     my $files = shift;
 
     my @queries;
-    foreach my $file ( sort @{$files} ) {
+    foreach my $file ( @{$files} ) {
         Test::More::note("loading $file");
 
         open( my $schema_fh, '<', $file )
@@ -160,16 +161,12 @@ sub _verify_date {
 }
 
 sub create_feed {
-    my $arg  = {
-        feed    => undef,
-        entries => undef,
-        @_,
-    };
+    my $arg = shift;
 
     require XML::RSS;
     require XML::Feed;
 
-    foreach my $required ( qw{feed entries} ) {
+    foreach my $required (qw{feed entries}) {
         if ( !defined $arg->{$required} ) {
             Carp::confess "arg $required is required";
         }
@@ -179,9 +176,9 @@ sub create_feed {
         Carp::confess 'arg feed must be a hashref';
     }
 
-    foreach my $required ( qw{title link description language author copyright date} ) {
+    foreach my $required (qw{title link description language author copyright date}) {
         if ( !$arg->{feed}{$required} ) {
-           Carp::confess "arg feed $required key is required";
+            Carp::confess "arg feed $required key is required";
         }
     }
 
@@ -194,8 +191,8 @@ sub create_feed {
         Carp::confess 'arg entries must be an arrayref';
     }
 
-    foreach my $entry ( @{$arg->{entries}} ) {
-        foreach my $required ( qw{link title summary content author date} ) {
+    foreach my $entry ( @{ $arg->{entries} } ) {
+        foreach my $required (qw{link title summary content author date}) {
             if ( !$entry->{$required} ) {
                 Carp::confess "arg entries $required key is required";
             }
@@ -212,7 +209,7 @@ sub create_feed {
         title       => $arg->{feed}{title},
         link        => $arg->{feed}{link},
         description => $arg->{feed}{description},
-        dc => {
+        dc          => {
             date      => $arg->{feed}{date},
             subject   => $arg->{feed}{description},
             creator   => $arg->{feed}{author},
@@ -222,19 +219,19 @@ sub create_feed {
         },
     );
 
-    foreach my $entry ( @{$arg->{entries}} ) {
+    foreach my $entry ( @{ $arg->{entries} } ) {
         $rss->add_item(
             title       => $entry->{title},
             link        => $entry->{link},
             description => $entry->{summary},
-            dc => {
+            dc          => {
                 creator => $entry->{author},
                 date    => $entry->{date},
             },
         );
     }
 
-    return XML::Feed->parse(\$rss->as_string);
+    return XML::Feed->parse( \$rss->as_string );
 }
 
 END {
