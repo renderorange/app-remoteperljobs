@@ -118,6 +118,8 @@ sub load_sql_files {
 
     my @queries;
     foreach my $file ( sort @{$files} ) {
+        Test::More::note("loading $file");
+
         open( my $schema_fh, '<', $file )
             or Carp::confess "open $file: $!";
 
