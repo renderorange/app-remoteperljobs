@@ -1,0 +1,6 @@
+#!/bin/bash
+
+rm -rf cover_db
+PERL5OPT=-MDevel::Cover=-ignore,"\.t$","prove","Test\.pm$",-coverage,statement,branch,condition,path,subroutine prove -wmlr
+cover
+python -m SimpleHTTPServer 8000
