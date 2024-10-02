@@ -2,6 +2,7 @@ use strict;
 use warnings;
 
 use FindBin;
+use Try::Tiny ();
 use lib "$FindBin::RealBin/../lib", "$FindBin::RealBin/../../lib";
 use App::RemotePerlJobs::Test;
 
@@ -64,5 +65,22 @@ my $jobs_expected = [
 my $jobs = $App::RemotePerlJobs::Test::dbh->selectall_arrayref( 'select * from jobs', { Slice => {} } );
 
 cmp_deeply( $jobs, $jobs_expected, 'fetched jobs entries match expected' );
+
+App::RemotePerlJobs::Test::override(
+    package => 'App::Toot',
+    name => 'id',
+    subref => sub {
+        return;
+    },
+);
+
+Try::Tiny::try {
+    $App::RemotePerlJobs::Test::dbh->do( 'update jobs set reposted = 0 where id = ?', undef, 2 );
+}
+Try::Tiny::catch {
+    diag "update jobs set reposted failed: $_";
+};
+
+throws_ok { $app->post() } qr/post failed/, 'exception was thrown if posting to mastodon failed';
 
 done_testing();
