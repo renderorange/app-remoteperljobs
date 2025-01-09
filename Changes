@@ -1,5 +1,14 @@
 Revision history for App::RemotePerlJobs
 
+0.005 2025-01-09
+ - Add integration test for fetch_posts
+ - Add second item entry to fetch_posts test
+ - Add verbose file name output during testing sql load
+ - Add a second test feed url and mock returning a feed for each
+ - Add run_cover script
+ - Add integration test to test posting and updating the db
+ - Add test for exception if post to mastodon failed
+
 0.004 2024-08-31
  - Move perl deps and repo update in make target
  - Add skip_cleanup argument to Test.pm
